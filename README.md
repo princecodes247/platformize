@@ -105,7 +105,7 @@ npm test
 ```
 
 ### Example Project
-See [`examples/tauri`](./examples/tauri) for a complete working Vite/Tauri example application.
+See [`examples/vite`](./examples/vite) for a complete working Vite example application.
 
 ---
 
