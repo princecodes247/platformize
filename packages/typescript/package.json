@@ -1,0 +1,28 @@
+{
+  "name": "@platformize/typescript",
+  "version": "0.1.0",
+  "description": "TypeScript integration utilities for Platformize",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@platformize/core": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

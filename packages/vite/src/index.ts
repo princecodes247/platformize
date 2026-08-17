@@ -1,0 +1,57 @@
+import type { Plugin } from "vite";
+import {
+  PlatformizeOptions,
+  createResolvedConfig,
+  getAllKnownPlatforms,
+  getCandidateSpecifiers,
+  isEligibleSpecifier,
+  hasExplicitPlatformSuffix,
+} from "@platformize/core";
+
+export type { PlatformizeOptions } from "@platformize/core";
+
+export default function platformize(options: PlatformizeOptions = {}): Plugin {
+  const config = createResolvedConfig(options);
+  const knownPlatforms = getAllKnownPlatforms(config);
+
+  return {
+    name: "platformize",
+    enforce: "pre",
+
+    async resolveId(source, importer, resolveOptions) {
+      // Avoid recursive loops or handling ineligible imports
+      if (!source || !isEligibleSpecifier(source)) {
+        return null;
+      }
+
+      // If source already has an explicit platform suffix (e.g. ./Button.windows), pass through
+      if (hasExplicitPlatformSuffix(source, knownPlatforms)) {
+        return null;
+      }
+
+      const candidates = getCandidateSpecifiers(source, config.suffixes, knownPlatforms);
+
+      for (const { candidate, suffix } of candidates) {
+        // Skip candidate matching exact input source with empty suffix to avoid infinite recursion
+        if (!suffix && candidate === source) {
+          continue;
+        }
+
+        try {
+          const resolved = await this.resolve(candidate, importer, {
+            ...resolveOptions,
+            skipSelf: true,
+          });
+
+          if (resolved) {
+            return resolved;
+          }
+        } catch {
+          // Continue trying next candidate in fallback chain
+        }
+      }
+
+      return null;
+    },
+  };
+}
