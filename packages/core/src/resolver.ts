@@ -20,14 +20,14 @@ export function evaluateRules(
     if (rule.test) {
       matches = rule.test(source, importer);
     } else if (rule.include) {
-      const isMatch = (target: string) => typeof rule.include === "string" ? target.includes(rule.include) : rule.include.test(target);
+      const isMatch = (target: string) => typeof rule.include === "string" ? target.includes(rule.include) : rule.include!.test(target);
       matches = isMatch(source) || (importer ? isMatch(importer) : false);
     }
 
     if (!matches) continue;
 
     if (rule.exclude) {
-      const isExcluded = (target: string) => typeof rule.exclude === "string" ? target.includes(rule.exclude) : rule.exclude.test(target);
+      const isExcluded = (target: string) => typeof rule.exclude === "string" ? target.includes(rule.exclude) : rule.exclude!.test(target);
       if (isExcluded(source) || (importer ? isExcluded(importer) : false)) {
         continue;
       }
