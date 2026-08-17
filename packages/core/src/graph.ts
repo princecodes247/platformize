@@ -64,6 +64,7 @@ export function createResolvedConfig(options: PlatformizeOptions = {}): Resolved
 
   const chain = resolvePlatformChain(targetPlatform, platforms, options.fallbacks || []);
   const suffixes = [...chain.map((p) => `.${p}`), ""];
+  const prefixes = options.prefixes || [".", "/", "@", "~"];
 
   return {
     platform: targetPlatform,
@@ -71,5 +72,6 @@ export function createResolvedConfig(options: PlatformizeOptions = {}): Resolved
     chain,
     suffixes,
     rules: options.rules || [],
+    prefixes,
   };
 }

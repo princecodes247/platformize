@@ -39,6 +39,12 @@ export interface PlatformizeOptions {
    * Additional explicit fallback platforms appended to the resolution chain.
    */
   fallbacks?: string[];
+
+  /**
+   * Allowed module specifier prefixes to resolve (e.g., ".", "/", "@", "~").
+   * Defaults to [".", "/", "@", "~"].
+   */
+  prefixes?: string[];
 }
 
 export interface ResolvedPlatformConfig {
@@ -47,4 +53,5 @@ export interface ResolvedPlatformConfig {
   chain: string[];
   suffixes: string[];
   rules: Rule[];
+  prefixes: string[];
 }

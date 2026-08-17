@@ -42,18 +42,36 @@ console.log(candidates);
 */
 ```
 
-## Custom Platform Definition
+## Custom Platform Definition (Without Presets)
+
+You are not required to use a preset. You can build entirely custom platform inheritance graphs by passing the `platforms` object directly. Platformize resolves paths using a Breadth-First Search across your `extends` configurations.
 
 ```typescript
 import { createResolvedConfig } from "@platformize/core";
 
 const config = createResolvedConfig({
-  platform: "ios",
-  platforms: {
-    ios: { extends: ["mobile", "native"] },
-    android: { extends: ["mobile", "native"] },
-    mobile: { extends: ["native"] },
-    native: { extends: [] }
-  }
+      platform: "ios",
+      platforms: {
+        ios: { extends: ["mobile", "native"] },
+        android: { extends: ["mobile", "native"] },
+        mobile: { extends: ["native"] },
+        native: { extends: [] }
+      }
 });
+
+console.log(config.suffixes);
+// Output: [".ios", ".mobile", ".native", ""]
+```
+
+## Aliases & Workspace Packages
+
+By default, Platformize processes local relative imports (`./`, `../`) and absolute paths (`/`). It also includes common alias prefixes (`@/` and `~/`) automatically. 
+
+If you use a custom path alias or need platform resolution across internal workspace packages, specify them in the `prefixes` array:
+
+```typescript
+platformize({
+  preset: "tauri",
+  prefixes: [".", "/", "@", "~", "@org/ui/"]
+})
 ```

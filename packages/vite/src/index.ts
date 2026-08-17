@@ -34,9 +34,9 @@ export default function platformize(options: PlatformizeOptions = {}): {
     name: "platformize",
     enforce: "pre",
 
-    async resolveId(source: string, importer: string | undefined, resolveOptions) {
+    async resolveId(source: string, importer: string | undefined, resolveOptions: any) {
       // Avoid recursive loops or handling ineligible imports
-      if (!source || !isEligibleSpecifier(source)) {
+      if (!source || !isEligibleSpecifier(source, config.prefixes)) {
         return null;
       }
 
