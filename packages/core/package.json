@@ -3,6 +3,9 @@
   "version": "0.1.1",
   "description": "Core platform-aware resolution engine for JavaScript/TypeScript",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
