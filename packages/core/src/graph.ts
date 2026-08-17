@@ -18,6 +18,7 @@ export function normalizePlatformNode(def: PlatformDefinition): PlatformNode {
     return { extends: def };
   }
   return {
+    aliases: typeof def.aliases === "string" ? [def.aliases] : def.aliases || [],
     extends: typeof def.extends === "string" ? [def.extends] : def.extends || [],
     fallbacks: typeof def.fallbacks === "string" ? [def.fallbacks] : def.fallbacks || [],
     suffixes: typeof def.suffixes === "string" ? [def.suffixes] : def.suffixes,
@@ -33,6 +34,24 @@ export function normalizePlatformMap(map: PlatformMap): Record<string, PlatformN
     result[key] = normalizePlatformNode(val);
   }
   return result;
+}
+
+/**
+ * Finds canonical platform name if targetPlatform matches a platform key or alias.
+ */
+export function findCanonicalPlatform(
+  targetPlatform: string,
+  platforms: Record<string, PlatformNode>
+): string {
+  if (platforms[targetPlatform]) {
+    return targetPlatform;
+  }
+  for (const [name, node] of Object.entries(platforms)) {
+    if (node.aliases && Array.isArray(node.aliases) && node.aliases.includes(targetPlatform)) {
+      return name;
+    }
+  }
+  return targetPlatform;
 }
 
 /**
@@ -62,21 +81,23 @@ export function resolvePlatformChain(
         if (node.extends) {
           const parents = Array.isArray(node.extends) ? node.extends : [node.extends];
           for (const parent of parents) {
-            if (!platforms[parent] && !visited.has(parent)) {
+            const canonicalParent = findCanonicalPlatform(parent, platforms);
+            if (!platforms[canonicalParent] && !visited.has(canonicalParent)) {
               throw new Error(
                 `PlatformizeError: Platform "${current}" extends unknown platform "${parent}".`
               );
             }
-            if (!visited.has(parent)) {
-              queue.push(parent);
+            if (!visited.has(canonicalParent)) {
+              queue.push(canonicalParent);
             }
           }
         }
         if (node.fallbacks) {
           const fallbacks = Array.isArray(node.fallbacks) ? node.fallbacks : [node.fallbacks];
           for (const fb of fallbacks) {
-            if (!visited.has(fb)) {
-              nodeFallbacksToProcess.push(fb);
+            const canonicalFb = findCanonicalPlatform(fb, platforms);
+            if (!visited.has(canonicalFb)) {
+              nodeFallbacksToProcess.push(canonicalFb);
             }
           }
         }
@@ -93,8 +114,9 @@ export function resolvePlatformChain(
   processPlatform(targetPlatform);
 
   for (const fb of globalFallbacks) {
-    if (!visited.has(fb)) {
-      processPlatform(fb);
+    const canonicalFb = findCanonicalPlatform(fb, platforms);
+    if (!visited.has(canonicalFb)) {
+      processPlatform(canonicalFb);
     }
   }
 
@@ -121,19 +143,26 @@ export function createResolvedConfig(options: PlatformizeOptions = {}): Resolved
     }
 
     if (!targetPlatform && typeof process !== "undefined" && process.platform) {
-      if (process.platform === "darwin") targetPlatform = "macos";
-      else if (process.platform === "win32") targetPlatform = "windows";
-      else if (process.platform === "linux") targetPlatform = "linux";
+      targetPlatform = process.platform;
     }
   }
   targetPlatform = targetPlatform || "macos";
 
+  const canonicalPlatform = findCanonicalPlatform(targetPlatform, platforms);
+
   const isStrict = options.strict !== false;
   const knownPlatformKeys = Object.keys(platforms);
   if (isStrict && knownPlatformKeys.length > 0) {
-    if (!platforms[targetPlatform]) {
+    if (!platforms[canonicalPlatform]) {
+      const validNamesAndAliases = new Set<string>();
+      for (const [name, node] of Object.entries(platforms)) {
+        validNamesAndAliases.add(name);
+        if (node.aliases) {
+          for (const alias of node.aliases) validNamesAndAliases.add(alias);
+        }
+      }
       throw new Error(
-        `PlatformizeError: Target platform "${targetPlatform}" is not defined in the configured platforms or preset. Valid platforms: ${knownPlatformKeys
+        `PlatformizeError: Target platform "${targetPlatform}" is not defined in the configured platforms or preset. Valid platforms: ${Array.from(validNamesAndAliases)
           .map((k) => `"${k}"`)
           .join(", ")}.`
       );
@@ -143,7 +172,7 @@ export function createResolvedConfig(options: PlatformizeOptions = {}): Resolved
   const globalFallbacks =
     typeof options.fallbacks === "string" ? [options.fallbacks] : options.fallbacks || [];
 
-  const chain = resolvePlatformChain(targetPlatform, platforms, globalFallbacks);
+  const chain = resolvePlatformChain(canonicalPlatform, platforms, globalFallbacks);
 
   // Compute suffixes for each platform in chain
   const suffixes: string[] = [];
@@ -169,7 +198,7 @@ export function createResolvedConfig(options: PlatformizeOptions = {}): Resolved
   const prefixes = options.prefixes || [".", "/", "@", "~"];
 
   return {
-    platform: targetPlatform,
+    platform: canonicalPlatform,
     platforms,
     chain,
     suffixes,

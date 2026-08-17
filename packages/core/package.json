@@ -1,6 +1,6 @@
 {
   "name": "@platformize/core",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Core platform-aware resolution engine for JavaScript/TypeScript",
   "type": "module",
   "publishConfig": {

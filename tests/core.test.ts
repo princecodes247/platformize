@@ -56,6 +56,14 @@ describe("@platformize/core", () => {
     expect(config.suffixes).toEqual([".tvos", ""]);
   });
 
+  it("resolves target platform aliases to canonical platform node", () => {
+    // darwin is an alias for macos in Tauri preset
+    const config = createResolvedConfig({ preset: "tauri", targetPlatform: "darwin" });
+    expect(config.platform).toBe("macos");
+    expect(config.chain).toEqual(["macos", "desktop", "native"]);
+    expect(config.suffixes).toEqual([".macos", ".desktop", ".native", ""]);
+  });
+
   it("supports per-platform fallbacks", () => {
     const config = createResolvedConfig({
       targetPlatform: "macos",

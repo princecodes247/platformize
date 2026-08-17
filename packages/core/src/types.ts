@@ -32,6 +32,16 @@ export interface Rule {
  */
 export interface PlatformNode {
   /**
+   * Alias names for this platform (e.g. "darwin", "mac" for "macos").
+   * When targetPlatform matches an alias, it maps directly to this platform node.
+   * Can be a single string or an array of strings.
+   * 
+   * @example "darwin"
+   * @example ["darwin", "mac"]
+   */
+  aliases?: string | string[];
+
+  /**
    * Platform(s) this platform inherits from (resolved first in order).
    * Can be a single platform string or an array of platform strings.
    *

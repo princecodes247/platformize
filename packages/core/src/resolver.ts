@@ -87,6 +87,12 @@ export function getAllKnownPlatforms(config: ResolvedPlatformConfig): Set<string
     platforms.add(item);
   }
   for (const node of Object.values(config.platforms)) {
+    if (node.aliases) {
+      const aliases = Array.isArray(node.aliases) ? node.aliases : [node.aliases];
+      for (const a of aliases) {
+        platforms.add(a);
+      }
+    }
     if (node.suffixes) {
       const suffixes = Array.isArray(node.suffixes) ? node.suffixes : [node.suffixes];
       for (const s of suffixes) {
