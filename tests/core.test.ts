@@ -20,6 +20,14 @@ describe("@platformize/core", () => {
     expect(config.suffixes).toEqual([".macos", ".desktop", ".native", ""]);
   });
 
+  it("auto-detects platform from environment variables if not provided", () => {
+    process.env.PLATFORM = "linux";
+    const config = createResolvedConfig({ preset: "tauri" });
+    expect(config.platform).toBe("linux");
+    expect(config.suffixes).toEqual([".linux", ".desktop", ".native", ""]);
+    delete process.env.PLATFORM;
+  });
+
   it("generates candidate specifiers without explicit suffix", () => {
     const config = createResolvedConfig({ preset: "tauri", platform: "macos" });
     const known = getAllKnownPlatforms(config);

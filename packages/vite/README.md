@@ -19,12 +19,19 @@ import platformize from "@platformize/vite";
 export default defineConfig({
   plugins: [
     platformize({
-      preset: "tauri",
-      platform: process.env.VITE_PLATFORM || "macos",
+      preset: "tauri" // Platform auto-detected from environment variables!
     }),
   ],
 });
 ```
+
+### Zero-Config DX
+
+Platformize is designed to be highly magical out of the box:
+
+- **Auto Platform Detection**: You don't need to specify `platform`. It will automatically check `process.env.VITE_PLATFORM`, `process.env.TAURI_ENV_PLATFORM`, or fallback to `process.platform`.
+- **Auto TypeScript Sync**: When Vite starts, Platformize will check your `tsconfig.json` and automatically update the `moduleSuffixes` to perfectly match the current active platform. Your IDE updates instantly. (Disable with `autoSyncTsConfig: false`).
+- **Startup Logs**: Pass `verbose: true` to have Platformize print the exactly resolved fallback chain to your console on Vite startup.
 
 ### Custom Platforms & Rules
 

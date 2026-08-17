@@ -54,7 +54,11 @@ export function createResolvedConfig(options: PlatformizeOptions = {}): Resolved
   // Default target platform if not explicitly passed: try process.platform mapping or 'macos'
   let targetPlatform = options.platform;
   if (!targetPlatform) {
-    if (typeof process !== "undefined" && process.platform) {
+    if (typeof process !== "undefined" && process.env && process.env.PLATFORM) {
+      targetPlatform = process.env.PLATFORM;
+    }
+
+    if (!targetPlatform && typeof process !== "undefined" && process.platform) {
       if (process.platform === "darwin") targetPlatform = "macos";
       else if (process.platform === "win32") targetPlatform = "windows";
       else if (process.platform === "linux") targetPlatform = "linux";

@@ -20,7 +20,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@platformize/core": "*"
+    "@platformize/core": "*",
+    "@platformize/typescript": "*"
   },
   "peerDependencies": {
     "vite": "^5.0.0 || ^6.0.0"

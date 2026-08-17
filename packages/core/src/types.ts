@@ -45,6 +45,18 @@ export interface PlatformizeOptions {
    * Defaults to [".", "/", "@", "~"].
    */
   prefixes?: string[];
+
+  /**
+   * Print active platform and fallback chain to console when Vite starts.
+   * Defaults to false.
+   */
+  verbose?: boolean;
+
+  /**
+   * Automatically update tsconfig.json moduleSuffixes to match the active platform chain when Vite starts.
+   * Defaults to true.
+   */
+  autoSyncTsConfig?: boolean;
 }
 
 export interface ResolvedPlatformConfig {

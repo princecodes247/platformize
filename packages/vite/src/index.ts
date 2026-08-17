@@ -1,4 +1,4 @@
-
+import { updateTsConfigFile } from "@platformize/typescript";
 import {
   PlatformizeOptions,
   createResolvedConfig,
@@ -26,13 +26,44 @@ export default function platformize(options: PlatformizeOptions = {}): {
       isEntry: boolean;
     }
   ) => Promise<any>;
+  configResolved?: (viteConfig: any) => void;
 } {
-  const config = createResolvedConfig(options);
+  let targetPlatform = options.platform;
+  if (!targetPlatform && typeof process !== "undefined" && process.env) {
+    targetPlatform = process.env.VITE_PLATFORM || process.env.TAURI_ENV_PLATFORM;
+  }
+
+  const config = createResolvedConfig({
+    ...options,
+    platform: targetPlatform || options.platform,
+  });
   const knownPlatforms = getAllKnownPlatforms(config);
 
   return {
     name: "platformize",
     enforce: "pre",
+
+    configResolved(viteConfig: any) {
+      if (options.verbose) {
+        // eslint-disable-next-line no-console
+        console.log(
+          `\x1b[36m⚡️ [Platformize]\x1b[0m Target: \x1b[32m${config.platform}\x1b[0m | Chain: \x1b[33m${config.chain.map(p => `.${p}`).join(" -> ")}\x1b[0m`
+        );
+      }
+
+      if (options.autoSyncTsConfig !== false) {
+        try {
+          const tsconfigPath = viteConfig.root + "/tsconfig.json";
+          const { updated } = updateTsConfigFile(tsconfigPath, options);
+          if (updated && options.verbose) {
+            // eslint-disable-next-line no-console
+            console.log(`\x1b[36m[Platformize]\x1b[0m Synced tsconfig.json moduleSuffixes`);
+          }
+        } catch (e) {
+          // Ignore failures to sync tsconfig
+        }
+      }
+    },
 
     async resolveId(source: string, importer: string | undefined, resolveOptions: any) {
       // Avoid recursive loops or handling ineligible imports

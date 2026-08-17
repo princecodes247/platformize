@@ -67,4 +67,27 @@ describe("@platformize/vite", () => {
     const resolved = await resolveFn.call(mockContext, "./Button.tsx", "/project/src/App.tsx", {});
     expect(resolved).toEqual({ id: "/project/src/Button.mobile.tsx" });
   });
+
+  it("auto-detects platform from VITE_PLATFORM environment variable", async () => {
+    process.env.VITE_PLATFORM = "linux";
+    
+    // We do not pass platform in options
+    const plugin = platformize({ preset: "tauri" });
+    const resolveFn = plugin.resolveId as Function;
+
+    const mockContext = {
+      async resolve(candidate: string) {
+        if (candidate === "./Button.linux.tsx") {
+          return { id: "/project/src/Button.linux.tsx" };
+        }
+        return null;
+      },
+    };
+
+    // If VITE_PLATFORM=linux was picked up, it should resolve Button.linux.tsx
+    const resolved = await resolveFn.call(mockContext, "./Button.tsx", "/project/src/App.tsx", {});
+    expect(resolved).toEqual({ id: "/project/src/Button.linux.tsx" });
+
+    delete process.env.VITE_PLATFORM;
+  });
 });
