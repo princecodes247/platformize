@@ -16,7 +16,7 @@
     "src"
   ],
   "scripts": {
-    "build": "tsc -b",
+    "build": "tsup",
     "clean": "rm -rf dist"
   },
   "dependencies": {
