@@ -5,6 +5,7 @@ import {
   getAllKnownPlatforms,
   hasExplicitPlatformSuffix,
   resolvePlatformChain,
+  isEligibleSpecifier,
   TAURI_PRESET,
 } from "../packages/core/src/index.js";
 
@@ -57,11 +58,39 @@ describe("@platformize/core", () => {
     expect(candidates).toEqual([{ candidate: "./Button.windows.tsx", suffix: "" }]);
   });
 
+  it("preserves non-JS extensions (like .css or .png) dynamically", () => {
+    const config = createResolvedConfig({ preset: "tauri", platform: "macos" });
+    const known = getAllKnownPlatforms(config);
+    const candidates = getCandidateSpecifiers("./styles.module.css", config.suffixes, known);
+
+    expect(candidates).toEqual([
+      { candidate: "./styles.module.macos.css", suffix: ".macos" },
+      { candidate: "./styles.module.desktop.css", suffix: ".desktop" },
+      { candidate: "./styles.module.native.css", suffix: ".native" },
+      { candidate: "./styles.module.css", suffix: "" },
+    ]);
+  });
+
   it("throws explicit configuration error for unknown extended platform", () => {
     expect(() =>
       resolvePlatformChain("invalid", {
         invalid: { extends: ["unknownPlatform"] },
       })
     ).toThrowError(/Platform "invalid" extends unknown platform "unknownPlatform"/);
+  });
+
+  it("identifies eligible specifiers based on prefixes", () => {
+    const prefixes = [".", "/", "@", "~"];
+    
+    // Eligible
+    expect(isEligibleSpecifier("./Button", prefixes)).toBe(true);
+    expect(isEligibleSpecifier("/src/Button", prefixes)).toBe(true);
+    expect(isEligibleSpecifier("@/components/Button", prefixes)).toBe(true);
+    expect(isEligibleSpecifier("~/utils", prefixes)).toBe(true);
+
+    // Ineligible
+    expect(isEligibleSpecifier("react", prefixes)).toBe(false);
+    expect(isEligibleSpecifier("https://cdn.example.com/lib.js", prefixes)).toBe(false);
+    expect(isEligibleSpecifier("\0vite/plugin", prefixes)).toBe(false);
   });
 });
