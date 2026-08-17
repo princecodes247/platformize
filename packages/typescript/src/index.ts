@@ -3,6 +3,17 @@ import path from "node:path";
 import { PlatformizeOptions, createResolvedConfig } from "@platformize/core";
 
 /**
+ * Strips comments and trailing commas from JSON string (JSONC) so standard JSON.parse can read tsconfig files.
+ */
+export function stripJsonComments(jsonString: string): string {
+  return jsonString
+    .replace(/("(?:[^"\\]|\\.)*")|\/\*[\s\S]*?\*\/|\/\/.*/g, (match, stringMatch) =>
+      stringMatch ? stringMatch : ""
+    )
+    .replace(/,(\s*[\}\]])/g, "$1");
+}
+
+/**
  * Returns TypeScript moduleSuffixes array for the target platform configuration.
  * e.g., [".macos", ".desktop", ".native", ""]
  */
@@ -24,6 +35,7 @@ export function generateTsConfigPatch(options: PlatformizeOptions = {}) {
 
 /**
  * Updates a tsconfig.json file on disk with current platform moduleSuffixes.
+ * Preserves all existing compilerOptions, target, lib, include, etc. even if the file contains comments.
  */
 export function updateTsConfigFile(
   tsconfigPath: string,
@@ -38,7 +50,8 @@ export function updateTsConfigFile(
 
   let parsed: Record<string, any> = {};
   try {
-    parsed = JSON.parse(rawJson);
+    const cleaned = stripJsonComments(rawJson);
+    parsed = JSON.parse(cleaned);
   } catch {
     parsed = {};
   }
@@ -48,6 +61,19 @@ export function updateTsConfigFile(
   }
 
   const suffixes = getModuleSuffixes(options);
+
+  // Check if moduleSuffixes already matches
+  const existingSuffixes = parsed.compilerOptions.moduleSuffixes;
+  if (
+    Array.isArray(existingSuffixes) &&
+    JSON.stringify(existingSuffixes) === JSON.stringify(suffixes)
+  ) {
+    return {
+      updated: false,
+      suffixes,
+    };
+  }
+
   parsed.compilerOptions.moduleSuffixes = suffixes;
 
   fs.writeFileSync(resolvedPath, JSON.stringify(parsed, null, 2) + "\n", "utf-8");
