@@ -125,8 +125,15 @@ export function hasExplicitPlatformSuffix(source: string, knownPlatforms: Set<st
  */
 export function isEligibleSpecifier(source: string, prefixes: string[]): boolean {
   if (!source) return false;
-  // Ignore virtual modules or Vite-internal paths
-  if (source.startsWith("\0") || source.startsWith("/@")) return false;
+  // Ignore virtual modules, Vite-internal paths, node_modules, and .vite cache
+  if (
+    source.startsWith("\0") ||
+    source.startsWith("/@") ||
+    source.includes("node_modules") ||
+    source.includes(".vite/")
+  ) {
+    return false;
+  }
   // Ignore absolute URLs (http, https, etc)
   if (/^[a-z]+:/i.test(source)) return false;
   // Default rule for relative paths or root-relative paths or aliases

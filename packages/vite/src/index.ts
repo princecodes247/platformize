@@ -65,8 +65,12 @@ export default function platformize(options: PlatformizeOptions = {}): {
     },
 
     async resolveId(source: string, importer: string | undefined, resolveOptions: any) {
-      // Avoid recursive loops or handling ineligible imports
-      if (!source || !isEligibleSpecifier(source, config.prefixes)) {
+      // Avoid handling node_modules or .vite dependencies or ineligible imports
+      if (
+        !source ||
+        (importer && (importer.includes("node_modules") || importer.includes(".vite/"))) ||
+        !isEligibleSpecifier(source, config.prefixes)
+      ) {
         return null;
       }
 

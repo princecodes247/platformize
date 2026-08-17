@@ -189,5 +189,7 @@ describe("@platformize/core", () => {
     expect(isEligibleSpecifier("react", prefixes)).toBe(false);
     expect(isEligibleSpecifier("https://cdn.example.com/lib.js", prefixes)).toBe(false);
     expect(isEligibleSpecifier("\0vite/plugin", prefixes)).toBe(false);
+    expect(isEligibleSpecifier("/app/node_modules/react/index.js", prefixes)).toBe(false);
+    expect(isEligibleSpecifier("/app/node_modules/.vite/deps/chunk-123.js", prefixes)).toBe(false);
   });
 });
