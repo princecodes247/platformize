@@ -5,9 +5,5 @@
     "rootDir": "./src",
     "types": ["node"]
   },
-  "references": [
-    { "path": "../core" },
-    { "path": "../typescript" }
-  ],
   "include": ["src/**/*"]
 }

@@ -1,4 +1,4 @@
-import type { Plugin } from "vite";
+
 import {
   PlatformizeOptions,
   createResolvedConfig,
@@ -8,10 +8,25 @@ import {
   hasExplicitPlatformSuffix,
   evaluateRules,
 } from "@platformize/core";
+import { PluginOption } from "vite";
 
 export type { PlatformizeOptions } from "@platformize/core";
 
-export default function platformize(options: PlatformizeOptions = {}): Plugin {
+export default function platformize(options: PlatformizeOptions = {}): {
+  name: string;
+  enforce: "pre" | "post";
+  resolveId: (
+    this: any,
+    source: string,
+    importer: string | undefined,
+    resolveOptions: {
+      attributes: Record<string, string>;
+      custom?: any;
+      ssr?: boolean;
+      isEntry: boolean;
+    }
+  ) => Promise<any>;
+} {
   const config = createResolvedConfig(options);
   const knownPlatforms = getAllKnownPlatforms(config);
 
@@ -19,7 +34,7 @@ export default function platformize(options: PlatformizeOptions = {}): Plugin {
     name: "platformize",
     enforce: "pre",
 
-    async resolveId(source, importer, resolveOptions) {
+    async resolveId(source: string, importer: string | undefined, resolveOptions) {
       // Avoid recursive loops or handling ineligible imports
       if (!source || !isEligibleSpecifier(source)) {
         return null;
