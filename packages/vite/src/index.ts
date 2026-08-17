@@ -28,14 +28,14 @@ export default function platformize(options: PlatformizeOptions = {}): {
   ) => Promise<any>;
   configResolved?: (viteConfig: any) => void;
 } {
-  let targetPlatform = options.platform;
+  let targetPlatform = options.targetPlatform;
   if (!targetPlatform && typeof process !== "undefined" && process.env) {
     targetPlatform = process.env.VITE_PLATFORM || process.env.TAURI_ENV_PLATFORM;
   }
 
   const config = createResolvedConfig({
     ...options,
-    platform: targetPlatform || options.platform,
+    targetPlatform: targetPlatform || options.targetPlatform,
   });
   const knownPlatforms = getAllKnownPlatforms(config);
 

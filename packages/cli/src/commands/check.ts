@@ -13,10 +13,10 @@ export interface CheckOptions {
 export function runCheck(options: CheckOptions = {}) {
   const cwd = options.cwd || process.cwd();
   const searchDir = path.resolve(cwd, options.dir || "src");
-  const platform = options.platform || "macos";
+  const targetPlatform = options.platform || "macos";
   const preset = options.preset || "tauri";
 
-  const config = createResolvedConfig({ platform, preset });
+  const config = createResolvedConfig({ targetPlatform, preset });
   const knownPlatforms = getAllKnownPlatforms(config);
 
   console.log("Platformize\n");
@@ -58,10 +58,10 @@ export function runCheck(options: CheckOptions = {}) {
   for (const file of files) {
     const rel = path.relative(cwd, file);
     const specifier = `./${rel.replace(/\.(tsx?|jsx?)$/, "")}`;
-    const resolved = runResolve({ specifier, platform, preset, cwd });
+    const resolved = runResolve({ specifier, platform: targetPlatform, preset, cwd });
 
     if (resolved) {
-      if (resolved.includes(`.${platform}.`)) {
+      if (resolved.includes(`.${targetPlatform}.`)) {
         console.log(`✓ ${resolved}`);
       } else {
         const resolvedBase = path.basename(resolved);
@@ -69,7 +69,7 @@ export function runCheck(options: CheckOptions = {}) {
         if (resolvedBase !== specBase) {
           console.log(`✓ ${resolved} (via fallback)`);
         } else {
-          console.log(`⚠ ${file} not specialized for ${platform}`);
+          console.log(`⚠ ${file} not specialized for ${targetPlatform}`);
           console.log(`  Using ${resolved}`);
         }
       }

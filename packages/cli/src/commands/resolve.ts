@@ -17,7 +17,7 @@ export function runResolve(options: ResolveOptions): string | null {
   const cwd = options.cwd || process.cwd();
   const config = createResolvedConfig({
     preset: options.preset || "tauri",
-    platform: options.platform || "macos",
+    targetPlatform: options.platform || "macos",
   });
   const knownPlatforms = getAllKnownPlatforms(config);
 

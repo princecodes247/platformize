@@ -12,7 +12,7 @@ export function resolvePlatformChain(
 ): string[] {
   const chain: string[] = [];
   const visited = new Set<string>();
-  const queue: string[] = [targetPlatform, ...explicitFallbacks];
+  const queue: string[] = [targetPlatform];
 
   while (queue.length > 0) {
     const current = queue.shift()!;
@@ -37,6 +37,13 @@ export function resolvePlatformChain(
     }
   }
 
+  for (const fallback of explicitFallbacks) {
+    if (!visited.has(fallback)) {
+      visited.add(fallback);
+      chain.push(fallback);
+    }
+  }
+
   return chain;
 }
 
@@ -52,7 +59,7 @@ export function createResolvedConfig(options: PlatformizeOptions = {}): Resolved
   };
 
   // Default target platform if not explicitly passed: try process.platform mapping or 'macos'
-  let targetPlatform = options.platform;
+  let targetPlatform = options.targetPlatform;
   if (!targetPlatform) {
     if (typeof process !== "undefined" && process.env && process.env.PLATFORM) {
       targetPlatform = process.env.PLATFORM;

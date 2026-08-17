@@ -11,15 +11,15 @@ export interface InitOptions {
 export function runInit(options: InitOptions = {}) {
   const cwd = options.cwd || process.cwd();
   const preset = options.preset || "tauri";
-  const platform = options.platform || "macos";
+  const targetPlatform = options.platform || "macos";
 
   console.log(`Initializing Platformize project in ${cwd}...`);
   console.log(`Preset: ${preset}`);
-  console.log(`Platform: ${platform}`);
+  console.log(`Platform: ${targetPlatform}`);
 
   const tsconfigPath = path.join(cwd, "tsconfig.json");
   if (fs.existsSync(tsconfigPath)) {
-    const result = updateTsConfigFile(tsconfigPath, { preset, platform });
+    const result = updateTsConfigFile(tsconfigPath, { preset, targetPlatform });
     console.log(`✓ Updated tsconfig.json moduleSuffixes: ${JSON.stringify(result.suffixes)}`);
   } else {
     console.log(`⚠ tsconfig.json not found in ${cwd}, skipping tsconfig update.`);

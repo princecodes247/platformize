@@ -21,9 +21,12 @@ export interface PlatformizeOptions {
   rules?: Rule[];
 
   /**
-   * The target platform for resolution (e.g., 'macos', 'windows', 'linux').
+   * The active target platform for this build (e.g., "macos", "ios").
+   * If omitted, Platformize auto-detects via standard environment variables.
+   * 
+   * @example "windows"
    */
-  platform?: string;
+  targetPlatform?: string;
 
   /**
    * Built-in preset to use, e.g. 'tauri'.

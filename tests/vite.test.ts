@@ -3,13 +3,13 @@ import platformize from "../packages/vite/src/index.js";
 
 describe("@platformize/vite", () => {
   it("initializes plugin with correct name and enforce property", () => {
-    const plugin = platformize({ preset: "tauri", platform: "macos" });
+    const plugin = platformize({ preset: "tauri", targetPlatform: "macos" });
     expect(plugin.name).toBe("platformize");
     expect(plugin.enforce).toBe("pre");
   });
 
   it("attempts to resolve candidate paths using host resolver mock", async () => {
-    const plugin = platformize({ preset: "tauri", platform: "macos" });
+    const plugin = platformize({ preset: "tauri", targetPlatform: "macos" });
     const resolveFn = plugin.resolveId as Function;
 
     const mockContext = {
@@ -26,7 +26,7 @@ describe("@platformize/vite", () => {
   });
 
   it("falls back to base implementation if platform implementation does not exist", async () => {
-    const plugin = platformize({ preset: "tauri", platform: "macos" });
+    const plugin = platformize({ preset: "tauri", targetPlatform: "macos" });
     const resolveFn = plugin.resolveId as Function;
 
     const mockContext = {
@@ -44,7 +44,7 @@ describe("@platformize/vite", () => {
 
   it("resolves candidate paths using custom defined platforms without a preset", async () => {
     const plugin = platformize({
-      platform: "ios",
+      targetPlatform: "ios",
       platforms: {
         ios: { extends: ["mobile", "native"] },
         android: { extends: ["mobile", "native"] },

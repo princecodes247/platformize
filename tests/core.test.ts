@@ -16,7 +16,7 @@ describe("@platformize/core", () => {
   });
 
   it("generates suffixes in expected order for macos", () => {
-    const config = createResolvedConfig({ preset: "tauri", platform: "macos" });
+    const config = createResolvedConfig({ preset: "tauri", targetPlatform: "macos" });
     expect(config.suffixes).toEqual([".macos", ".desktop", ".native", ""]);
   });
 
@@ -29,7 +29,7 @@ describe("@platformize/core", () => {
   });
 
   it("generates candidate specifiers without explicit suffix", () => {
-    const config = createResolvedConfig({ preset: "tauri", platform: "macos" });
+    const config = createResolvedConfig({ preset: "tauri", targetPlatform: "macos" });
     const known = getAllKnownPlatforms(config);
     const candidates = getCandidateSpecifiers("./Button", config.suffixes, known);
 
@@ -42,7 +42,7 @@ describe("@platformize/core", () => {
   });
 
   it("preserves extensions when generating candidates", () => {
-    const config = createResolvedConfig({ preset: "tauri", platform: "windows" });
+    const config = createResolvedConfig({ preset: "tauri", targetPlatform: "windows" });
     const known = getAllKnownPlatforms(config);
     const candidates = getCandidateSpecifiers("./Button.tsx", config.suffixes, known);
 
@@ -55,7 +55,7 @@ describe("@platformize/core", () => {
   });
 
   it("detects explicit platform suffix to prevent double suffixing", () => {
-    const config = createResolvedConfig({ preset: "tauri", platform: "macos" });
+    const config = createResolvedConfig({ preset: "tauri", targetPlatform: "macos" });
     const known = getAllKnownPlatforms(config);
 
     expect(hasExplicitPlatformSuffix("./Button.windows", known)).toBe(true);
@@ -67,7 +67,7 @@ describe("@platformize/core", () => {
   });
 
   it("preserves non-JS extensions (like .css or .png) dynamically", () => {
-    const config = createResolvedConfig({ preset: "tauri", platform: "macos" });
+    const config = createResolvedConfig({ preset: "tauri", targetPlatform: "macos" });
     const known = getAllKnownPlatforms(config);
     const candidates = getCandidateSpecifiers("./styles.module.css", config.suffixes, known);
 
@@ -100,5 +100,24 @@ describe("@platformize/core", () => {
     expect(isEligibleSpecifier("react", prefixes)).toBe(false);
     expect(isEligibleSpecifier("https://cdn.example.com/lib.js", prefixes)).toBe(false);
     expect(isEligibleSpecifier("\0vite/plugin", prefixes)).toBe(false);
+  });
+
+  it("appends explicit fallbacks to the suffix chain", () => {
+    const config = createResolvedConfig({
+      preset: "tauri",
+      targetPlatform: "macos",
+      fallbacks: ["web", "legacy"]
+    });
+    
+    expect(config.suffixes).toEqual([".macos", ".desktop", ".native", ".web", ".legacy", ""]);
+  });
+
+  it("passes through prefixes configuration", () => {
+    const config = createResolvedConfig({
+      targetPlatform: "macos",
+      prefixes: ["#"]
+    });
+    
+    expect(config.prefixes).toEqual(["#"]);
   });
 });

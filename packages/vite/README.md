@@ -44,7 +44,7 @@ import platformize from "@platformize/vite";
 export default defineConfig({
   plugins: [
     platformize({
-      platform: "ios", // current target platform
+      targetPlatform: "ios", // current target platform
       platforms: {
         ios: { extends: ["mobile", "native"] },
         android: { extends: ["mobile", "native"] },
@@ -67,11 +67,11 @@ export default defineConfig({
   plugins: [
     platformize({
       preset: "tauri",
-      platform: "macos", // Default
+      targetPlatform: "macos", // Default
       rules: [
         {
           include: "/src/admin/",
-          platform: "windows"
+          targetPlatform: "windows"
         }
       ]
     }),
