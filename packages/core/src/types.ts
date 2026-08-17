@@ -34,7 +34,7 @@ export interface PlatformNode {
   /**
    * Platform(s) this platform inherits from (resolved first in order).
    * Can be a single platform string or an array of platform strings.
-   * 
+   *
    * @example "desktop"
    * @example ["desktop", "native"]
    */
@@ -43,7 +43,7 @@ export interface PlatformNode {
   /**
    * Explicit fallback platform(s) for this specific platform node (resolved after extends).
    * Can be a single platform string or an array of platform strings.
-   * 
+   *
    * @example "web"
    * @example ["web", "common"]
    */
@@ -52,7 +52,7 @@ export interface PlatformNode {
   /**
    * Custom file suffixes associated with this platform.
    * Defaults to `["." + platformName]`.
-   * 
+   *
    * @example [".macos", ".mac", ".osx"]
    */
   suffixes?: string | string[];
@@ -75,7 +75,7 @@ export interface PlatformizeOptions {
   /**
    * The active target platform for this build (e.g., "macos", "ios").
    * If omitted, Platformize auto-detects via standard environment variables.
-   * 
+   *
    * @example "windows"
    */
   targetPlatform?: string;

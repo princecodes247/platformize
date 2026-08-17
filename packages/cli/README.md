@@ -11,6 +11,7 @@ npm install -D @platformize/cli
 ## Commands
 
 ### `platformize init`
+
 Initializes Platformize configuration by updating `tsconfig.json` `moduleSuffixes` and logging recommended `vite.config.ts` options.
 
 ```bash
@@ -18,6 +19,7 @@ npx platformize init --preset tauri --platform macos
 ```
 
 ### `platformize check`
+
 Scans source files in a directory and reports which platform-specific file variant resolves for each base module.
 
 ```bash
@@ -25,6 +27,7 @@ npx platformize check --dir ./src --platform macos --preset tauri
 ```
 
 Output:
+
 ```
 Platformize
 
@@ -37,6 +40,7 @@ Fallback chain: macos -> desktop -> native -> base
 ```
 
 ### `platformize resolve`
+
 Resolves a specific module specifier for a target platform.
 
 ```bash
@@ -44,6 +48,7 @@ npx platformize resolve ./src/components/WindowControls --platform windows
 ```
 
 Output:
+
 ```
 ./src/components/WindowControls.windows.tsx
 ```

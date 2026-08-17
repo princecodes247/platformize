@@ -10,7 +10,7 @@ describe("@platformize/vite", () => {
 
   it("attempts to resolve candidate paths using host resolver mock", async () => {
     const plugin = platformize({ preset: "tauri", targetPlatform: "macos" });
-    const resolveFn = plugin.resolveId as Function;
+    const resolveFn = plugin.resolveId as (this: any, ...args: any[]) => Promise<any>;
 
     const mockContext = {
       async resolve(candidate: string) {
@@ -27,7 +27,7 @@ describe("@platformize/vite", () => {
 
   it("falls back to base implementation if platform implementation does not exist", async () => {
     const plugin = platformize({ preset: "tauri", targetPlatform: "macos" });
-    const resolveFn = plugin.resolveId as Function;
+    const resolveFn = plugin.resolveId as (this: any, ...args: any[]) => Promise<any>;
 
     const mockContext = {
       async resolve(candidate: string) {
@@ -52,7 +52,7 @@ describe("@platformize/vite", () => {
         native: [],
       },
     });
-    const resolveFn = plugin.resolveId as Function;
+    const resolveFn = plugin.resolveId as (this: any, ...args: any[]) => Promise<any>;
 
     const mockContext = {
       async resolve(candidate: string) {
@@ -69,9 +69,9 @@ describe("@platformize/vite", () => {
 
   it("auto-detects platform from VITE_PLATFORM environment variable", async () => {
     process.env.VITE_PLATFORM = "linux";
-    
+
     const plugin = platformize({ preset: "tauri" });
-    const resolveFn = plugin.resolveId as Function;
+    const resolveFn = plugin.resolveId as (this: any, ...args: any[]) => Promise<any>;
 
     const mockContext = {
       async resolve(candidate: string) {

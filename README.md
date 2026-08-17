@@ -24,12 +24,12 @@ Platformize automatically resolves the appropriate implementation at build/modul
 
 ## Workspace Packages
 
-| Package | Description |
-|---|---|
-| [`@platformize/core`](./packages/core) | Core resolution engine, platform graph definition, presets, and fallback chain algorithm. |
-| [`@platformize/vite`](./packages/vite) | Vite plugin for platform-aware module resolution (supports Tauri, Electron, etc.). |
+| Package                                            | Description                                                                                |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| [`@platformize/core`](./packages/core)             | Core resolution engine, platform graph definition, presets, and fallback chain algorithm.  |
+| [`@platformize/vite`](./packages/vite)             | Vite plugin for platform-aware module resolution (supports Tauri, Electron, etc.).         |
 | [`@platformize/typescript`](./packages/typescript) | TypeScript integration utilities generating `moduleSuffixes` for standard TS typechecking. |
-| [`@platformize/cli`](./packages/cli) | CLI diagnostic and configuration tools (`init`, `check`, `resolve`). |
+| [`@platformize/cli`](./packages/cli)               | CLI diagnostic and configuration tools (`init`, `check`, `resolve`).                       |
 
 ---
 
@@ -67,12 +67,7 @@ This updates your `tsconfig.json` to include:
 ```json
 {
   "compilerOptions": {
-    "moduleSuffixes": [
-      ".macos",
-      ".desktop",
-      ".native",
-      ""
-    ]
+    "moduleSuffixes": [".macos", ".desktop", ".native", ""]
   }
 }
 ```
@@ -95,16 +90,19 @@ Component.tsx            ← 4 (Base fallback)
 ## Monorepo Development
 
 ### Build All Packages
+
 ```bash
 npm run build
 ```
 
 ### Run Tests
+
 ```bash
 npm test
 ```
 
 ### Example Project
+
 See [`examples/vite`](./examples/vite) for a complete working Vite example application.
 
 ---

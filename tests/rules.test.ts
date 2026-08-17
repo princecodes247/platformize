@@ -14,9 +14,9 @@ test("evaluateRules matches regex test and returns getChain", () => {
     rules: [
       {
         test: (source) => source.endsWith(".xyz"),
-        getChain: () => ["custom", "base"]
-      }
-    ]
+        getChain: () => ["custom", "base"],
+      },
+    ],
   });
   const suffixes = evaluateRules("./App.xyz", "./main.tsx", config);
   expect(suffixes).toEqual([".custom", ".base", ""]);
@@ -29,9 +29,9 @@ test("evaluateRules matches include path and applies platform", () => {
     rules: [
       {
         include: /admin/,
-        platform: "windows"
-      }
-    ]
+        platform: "windows",
+      },
+    ],
   });
   const suffixes = evaluateRules("./components/Button", "/src/admin/Dashboard.tsx", config);
   expect(suffixes).toEqual([".windows", ".desktop", ".native", ""]);
@@ -45,9 +45,9 @@ test("evaluateRules ignores if excluded", () => {
       {
         include: /admin/,
         exclude: /Button/,
-        platform: "windows"
-      }
-    ]
+        platform: "windows",
+      },
+    ],
   });
   // Excluded because source has Button
   const suffixes = evaluateRules("./components/Button", "/src/admin/Dashboard.tsx", config);

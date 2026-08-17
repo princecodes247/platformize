@@ -9,10 +9,12 @@ Thank you for your interest in contributing to Platformize! We welcome bug repor
 Platformize uses an `npm` monorepo workspace structure.
 
 ### Requirements
+
 - **Node.js**: v18.0.0 or higher
 - **npm**: v9.0.0 or higher
 
 ### Getting Started
+
 1. Clone the repository:
    ```bash
    git clone https://github.com/princecodes247/platformize.git
@@ -71,6 +73,7 @@ npx changeset
 ```
 
 Follow the interactive prompts:
+
 1. Select the packages affected by your changes.
 2. Choose the semver bump type (`patch`, `minor`, or `major`).
 3. Provide a clear summary of what changed.

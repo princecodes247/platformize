@@ -51,7 +51,9 @@ const resolveCmd = command("resolve")
     if (result) {
       console.log(result);
     } else {
-      console.error(`Could not resolve ${ctx.args.specifier} for platform ${ctx.flags.platform || "macos"}`);
+      console.error(
+        `Could not resolve ${ctx.args.specifier} for platform ${ctx.flags.platform || "macos"}`
+      );
       process.exit(1);
     }
   });

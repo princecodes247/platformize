@@ -19,7 +19,7 @@ import platformize from "@platformize/vite";
 export default defineConfig({
   plugins: [
     platformize({
-      preset: "tauri" // Platform auto-detected from environment variables!
+      preset: "tauri", // Platform auto-detected from environment variables!
     }),
   ],
 });
@@ -56,11 +56,11 @@ export default defineConfig({
         // Full PlatformNode object with custom suffixes and fallbacks
         web: {
           suffixes: [".web", ".browser"],
-          fallbacks: ["common"]
-        }
+          fallbacks: ["common"],
+        },
       },
       // Global safety-net fallbacks appended to all resolution chains
-      fallbacks: "web"
+      fallbacks: "web",
     }),
   ],
 });
@@ -79,9 +79,9 @@ export default defineConfig({
       rules: [
         {
           include: "/src/admin/",
-          platform: "windows"
-        }
-      ]
+          platform: "windows",
+        },
+      ],
     }),
   ],
 });

@@ -140,9 +140,8 @@ export function createResolvedConfig(options: PlatformizeOptions = {}): Resolved
     }
   }
 
-  const globalFallbacks = typeof options.fallbacks === "string"
-    ? [options.fallbacks]
-    : options.fallbacks || [];
+  const globalFallbacks =
+    typeof options.fallbacks === "string" ? [options.fallbacks] : options.fallbacks || [];
 
   const chain = resolvePlatformChain(targetPlatform, platforms, globalFallbacks);
 

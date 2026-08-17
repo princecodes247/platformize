@@ -4,10 +4,7 @@ import { resolvePlatformChain } from "./graph.js";
 /**
  * Helper to compute suffixes for a platform chain given normalized platform nodes.
  */
-export function computeSuffixesForChain(
-  chain: string[],
-  platforms: Record<string, any>
-): string[] {
+export function computeSuffixesForChain(chain: string[], platforms: Record<string, any>): string[] {
   const suffixes: string[] = [];
   for (const platformName of chain) {
     const node = platforms[platformName];
@@ -49,14 +46,20 @@ export function evaluateRules(
     if (rule.test) {
       matches = rule.test(source, importer);
     } else if (rule.include) {
-      const isMatch = (target: string) => typeof rule.include === "string" ? target.includes(rule.include) : rule.include!.test(target);
+      const isMatch = (target: string) =>
+        typeof rule.include === "string"
+          ? target.includes(rule.include)
+          : rule.include!.test(target);
       matches = isMatch(source) || (importer ? isMatch(importer) : false);
     }
 
     if (!matches) continue;
 
     if (rule.exclude) {
-      const isExcluded = (target: string) => typeof rule.exclude === "string" ? target.includes(rule.exclude) : rule.exclude!.test(target);
+      const isExcluded = (target: string) =>
+        typeof rule.exclude === "string"
+          ? target.includes(rule.exclude)
+          : rule.exclude!.test(target);
       if (isExcluded(source) || (importer ? isExcluded(importer) : false)) {
         continue;
       }
@@ -99,10 +102,7 @@ export function getAllKnownPlatforms(config: ResolvedPlatformConfig): Set<string
  * Checks if a path specifier already explicitly includes a recognized platform suffix.
  * e.g., "./Button.windows" or "./FileSystem.macos.ts" -> true
  */
-export function hasExplicitPlatformSuffix(
-  source: string,
-  knownPlatforms: Set<string>
-): boolean {
+export function hasExplicitPlatformSuffix(source: string, knownPlatforms: Set<string>): boolean {
   for (const platform of knownPlatforms) {
     // Matches .platform at the end of the string, optionally followed by an extension
     const regex = new RegExp(`\\.${platform}(\\.[^./]+)?$`);

@@ -8,7 +8,6 @@ import {
   hasExplicitPlatformSuffix,
   evaluateRules,
 } from "@platformize/core";
-import { PluginOption } from "vite";
 
 export type { PlatformizeOptions } from "@platformize/core";
 
@@ -47,7 +46,7 @@ export default function platformize(options: PlatformizeOptions = {}): {
       if (options.verbose) {
         // eslint-disable-next-line no-console
         console.log(
-          `\x1b[36m⚡️ [Platformize]\x1b[0m Target: \x1b[32m${config.platform}\x1b[0m | Chain: \x1b[33m${config.chain.map(p => `.${p}`).join(" -> ")}\x1b[0m`
+          `\x1b[36m⚡️ [Platformize]\x1b[0m Target: \x1b[32m${config.platform}\x1b[0m | Chain: \x1b[33m${config.chain.map((p) => `.${p}`).join(" -> ")}\x1b[0m`
         );
       }
 

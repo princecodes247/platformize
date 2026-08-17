@@ -16,7 +16,11 @@ npm install -D @platformize/typescript
 ## Usage
 
 ```typescript
-import { getModuleSuffixes, generateTsConfigPatch, updateTsConfigFile } from "@platformize/typescript";
+import {
+  getModuleSuffixes,
+  generateTsConfigPatch,
+  updateTsConfigFile,
+} from "@platformize/typescript";
 
 // Get moduleSuffixes array for target platform
 const suffixes = getModuleSuffixes({ preset: "tauri", platform: "macos" });

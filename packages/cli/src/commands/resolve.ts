@@ -25,9 +25,8 @@ export function runResolve(options: ResolveOptions): string | null {
   const extensions = [".tsx", ".ts", ".jsx", ".js", ".json", ""];
 
   for (const { candidate } of candidates) {
-    const relativePath = candidate.startsWith("./") || candidate.startsWith("../")
-      ? candidate
-      : `./${candidate}`;
+    const relativePath =
+      candidate.startsWith("./") || candidate.startsWith("../") ? candidate : `./${candidate}`;
     const absoluteBasePath = path.resolve(cwd, relativePath);
 
     for (const ext of extensions) {
