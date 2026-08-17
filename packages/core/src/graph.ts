@@ -70,5 +70,6 @@ export function createResolvedConfig(options: PlatformizeOptions = {}): Resolved
     platforms,
     chain,
     suffixes,
+    rules: options.rules || [],
   };
 }

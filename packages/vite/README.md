@@ -26,6 +26,54 @@ export default defineConfig({
 });
 ```
 
+### Custom Platforms & Rules
+
+You can completely define your own custom platforms and inheritance rules, overriding or extending the built-in presets:
+
+```typescript
+import { defineConfig } from "vite";
+import platformize from "@platformize/vite";
+
+export default defineConfig({
+  plugins: [
+    platformize({
+      platform: "ios", // current target platform
+      platforms: {
+        ios: { extends: ["mobile", "native"] },
+        android: { extends: ["mobile", "native"] },
+        mobile: { extends: ["native"] },
+        native: { extends: [] }
+      }
+    }),
+  ],
+});
+```
+
+### Dynamic Rules
+
+You can add dynamic rules to override the target platform based on file paths (importer or source) or patterns. 
+
+For example, to force all imports inside the `src/admin` directory to resolve using `windows` fallbacks:
+
+```typescript
+export default defineConfig({
+  plugins: [
+    platformize({
+      preset: "tauri",
+      platform: "macos", // Default
+      rules: [
+        {
+          include: "/src/admin/",
+          platform: "windows"
+        }
+      ]
+    }),
+  ],
+});
+```
+
+You can also use programmatic `test` and `getChain` hooks for maximum flexibility (note: TypeScript typechecking will not be aware of these dynamic programmatic overrides).
+
 ## How It Works
 
 1. Intercepts Vite module resolution (`resolveId`).

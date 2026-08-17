@@ -6,7 +6,20 @@ export type PlatformMap = Record<string, PlatformNode>;
 
 export type PresetName = "tauri" | string;
 
+export interface Rule {
+  test?: (source: string, importer: string | undefined) => boolean;
+  include?: string | RegExp;
+  exclude?: string | RegExp;
+  platform?: string;
+  getChain?: (source: string, importer: string | undefined, currentPlatform: string) => string[];
+}
+
 export interface PlatformizeOptions {
+  /**
+   * Custom resolution rules for context-aware or programmatic platform resolution.
+   */
+  rules?: Rule[];
+
   /**
    * The target platform for resolution (e.g., 'macos', 'windows', 'linux').
    */
@@ -33,4 +46,5 @@ export interface ResolvedPlatformConfig {
   platforms: PlatformMap;
   chain: string[];
   suffixes: string[];
+  rules: Rule[];
 }

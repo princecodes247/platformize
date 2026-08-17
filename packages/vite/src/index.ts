@@ -6,6 +6,7 @@ import {
   getCandidateSpecifiers,
   isEligibleSpecifier,
   hasExplicitPlatformSuffix,
+  evaluateRules,
 } from "@platformize/core";
 
 export type { PlatformizeOptions } from "@platformize/core";
@@ -29,7 +30,8 @@ export default function platformize(options: PlatformizeOptions = {}): Plugin {
         return null;
       }
 
-      const candidates = getCandidateSpecifiers(source, config.suffixes, knownPlatforms);
+      const activeSuffixes = evaluateRules(source, importer, config);
+      const candidates = getCandidateSpecifiers(source, activeSuffixes, knownPlatforms);
 
       for (const { candidate, suffix } of candidates) {
         // Skip candidate matching exact input source with empty suffix to avoid infinite recursion

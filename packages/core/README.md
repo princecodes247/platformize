@@ -10,9 +10,10 @@ npm install @platformize/core
 
 ## Features
 
-- **Platform Inheritance Graphs**: Support platforms extending shared ancestor platforms (e.g. `macos` extends `desktop` which extends `native`).
+- **Platform Inheritance Graphs**: Support platforms extending shared ancestor platforms.
 - **Presets**: Built-in `tauri` preset for `macos`, `windows`, `linux`, `desktop`, `native`.
-- **Candidate Generator**: Computes candidate paths preserving extensions and detecting explicit platform suffixes to prevent double suffixing (`Button.windows.macos.tsx`).
+- **Dynamic Rules**: Conditionally override resolution based on file paths or import patterns.
+- **Candidate Generator**: Computes candidate paths preserving extensions and detecting explicit platform suffixes.
 
 ## Usage
 

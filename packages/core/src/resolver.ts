@@ -1,4 +1,50 @@
-import { ResolvedPlatformConfig } from "./types.js";
+import { ResolvedPlatformConfig, Rule } from "./types.js";
+import { resolvePlatformChain } from "./graph.js";
+
+/**
+ * Evaluates custom resolution rules against the source and importer.
+ * Returns overridden suffixes if a rule matches, otherwise returns default suffixes.
+ */
+export function evaluateRules(
+  source: string,
+  importer: string | undefined,
+  config: ResolvedPlatformConfig
+): string[] {
+  if (!config.rules || config.rules.length === 0) {
+    return config.suffixes;
+  }
+
+  for (const rule of config.rules) {
+    let matches = false;
+
+    if (rule.test) {
+      matches = rule.test(source, importer);
+    } else if (rule.include) {
+      const isMatch = (target: string) => typeof rule.include === "string" ? target.includes(rule.include) : rule.include.test(target);
+      matches = isMatch(source) || (importer ? isMatch(importer) : false);
+    }
+
+    if (!matches) continue;
+
+    if (rule.exclude) {
+      const isExcluded = (target: string) => typeof rule.exclude === "string" ? target.includes(rule.exclude) : rule.exclude.test(target);
+      if (isExcluded(source) || (importer ? isExcluded(importer) : false)) {
+        continue;
+      }
+    }
+
+    // Rule matches, compute new suffixes
+    if (rule.getChain) {
+      const customChain = rule.getChain(source, importer, config.platform);
+      return [...customChain.map((p) => `.${p}`), ""];
+    } else if (rule.platform) {
+      const customChain = resolvePlatformChain(rule.platform, config.platforms, []);
+      return [...customChain.map((p) => `.${p}`), ""];
+    }
+  }
+
+  return config.suffixes;
+}
 
 /**
  * Known platform suffixes present in config/preset.
