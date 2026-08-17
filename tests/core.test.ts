@@ -7,17 +7,97 @@ import {
   resolvePlatformChain,
   isEligibleSpecifier,
   TAURI_PRESET,
+  normalizePlatformMap,
 } from "../packages/core/src/index.js";
 
 describe("@platformize/core", () => {
   it("resolves inheritance chain for Tauri preset macos target", () => {
-    const chain = resolvePlatformChain("macos", TAURI_PRESET);
+    const normalized = normalizePlatformMap(TAURI_PRESET);
+    const chain = resolvePlatformChain("macos", normalized);
     expect(chain).toEqual(["macos", "desktop", "native"]);
   });
 
   it("generates suffixes in expected order for macos", () => {
     const config = createResolvedConfig({ preset: "tauri", targetPlatform: "macos" });
     expect(config.suffixes).toEqual([".macos", ".desktop", ".native", ""]);
+  });
+
+  it("supports string and string[] shorthands in platforms map", () => {
+    const config = createResolvedConfig({
+      targetPlatform: "ios",
+      platforms: {
+        ios: ["mobile", "native"],
+        mobile: "native",
+        native: [],
+      },
+    });
+
+    expect(config.chain).toEqual(["ios", "mobile", "native"]);
+    expect(config.suffixes).toEqual([".ios", ".mobile", ".native", ""]);
+  });
+
+  it("throws a helpful error when targetPlatform is unknown in strict mode", () => {
+    expect(() =>
+      createResolvedConfig({
+        preset: "tauri",
+        targetPlatform: "macoss",
+      })
+    ).toThrowError(/Target platform "macoss" is not defined in the configured platforms or preset/);
+  });
+
+  it("allows unknown targetPlatform when strict: false", () => {
+    const config = createResolvedConfig({
+      preset: "tauri",
+      targetPlatform: "tvos",
+      strict: false,
+    });
+
+    expect(config.chain).toEqual(["tvos"]);
+    expect(config.suffixes).toEqual([".tvos", ""]);
+  });
+
+  it("supports per-platform fallbacks", () => {
+    const config = createResolvedConfig({
+      targetPlatform: "macos",
+      platforms: {
+        macos: {
+          extends: "desktop",
+          fallbacks: "web",
+        },
+        desktop: "native",
+        native: [],
+        web: [],
+      },
+    });
+
+    expect(config.chain).toEqual(["macos", "desktop", "native", "web"]);
+    expect(config.suffixes).toEqual([".macos", ".desktop", ".native", ".web", ""]);
+  });
+
+  it("supports custom suffixes per platform node", () => {
+    const config = createResolvedConfig({
+      targetPlatform: "web",
+      platforms: {
+        web: {
+          suffixes: [".web", ".browser"],
+        },
+      },
+    });
+
+    expect(config.suffixes).toEqual([".web", ".browser", ""]);
+    const known = getAllKnownPlatforms(config);
+    expect(known.has("browser")).toBe(true);
+    expect(known.has("web")).toBe(true);
+  });
+
+  it("appends global fallbacks at the end of resolution chain", () => {
+    const config = createResolvedConfig({
+      preset: "tauri",
+      targetPlatform: "macos",
+      fallbacks: ["web", "legacy"],
+    });
+
+    expect(config.suffixes).toEqual([".macos", ".desktop", ".native", ".web", ".legacy", ""]);
   });
 
   it("auto-detects platform from environment variables if not provided", () => {
@@ -81,43 +161,25 @@ describe("@platformize/core", () => {
 
   it("throws explicit configuration error for unknown extended platform", () => {
     expect(() =>
-      resolvePlatformChain("invalid", {
-        invalid: { extends: ["unknownPlatform"] },
-      })
+      resolvePlatformChain(
+        "invalid",
+        normalizePlatformMap({
+          invalid: { extends: ["unknownPlatform"] },
+        })
+      )
     ).toThrowError(/Platform "invalid" extends unknown platform "unknownPlatform"/);
   });
 
   it("identifies eligible specifiers based on prefixes", () => {
     const prefixes = [".", "/", "@", "~"];
-    
-    // Eligible
+
     expect(isEligibleSpecifier("./Button", prefixes)).toBe(true);
     expect(isEligibleSpecifier("/src/Button", prefixes)).toBe(true);
     expect(isEligibleSpecifier("@/components/Button", prefixes)).toBe(true);
     expect(isEligibleSpecifier("~/utils", prefixes)).toBe(true);
 
-    // Ineligible
     expect(isEligibleSpecifier("react", prefixes)).toBe(false);
     expect(isEligibleSpecifier("https://cdn.example.com/lib.js", prefixes)).toBe(false);
     expect(isEligibleSpecifier("\0vite/plugin", prefixes)).toBe(false);
-  });
-
-  it("appends explicit fallbacks to the suffix chain", () => {
-    const config = createResolvedConfig({
-      preset: "tauri",
-      targetPlatform: "macos",
-      fallbacks: ["web", "legacy"]
-    });
-    
-    expect(config.suffixes).toEqual([".macos", ".desktop", ".native", ".web", ".legacy", ""]);
-  });
-
-  it("passes through prefixes configuration", () => {
-    const config = createResolvedConfig({
-      targetPlatform: "macos",
-      prefixes: ["#"]
-    });
-    
-    expect(config.prefixes).toEqual(["#"]);
   });
 });

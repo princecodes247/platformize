@@ -2,28 +2,21 @@ import { PlatformMap } from "./types.js";
 
 /**
  * Tauri preset configuration:
- * macos -> [desktop, native]
- * windows -> [desktop, native]
- * linux -> [desktop, native]
- * desktop -> [native]
- * native -> []
+ * macos -> desktop -> native
+ * windows -> desktop -> native
+ * linux -> desktop -> native
+ * ios -> mobile -> native
+ * android -> mobile -> native
  */
 export const TAURI_PRESET: PlatformMap = {
-  macos: {
-    extends: ["desktop", "native"],
-  },
-  windows: {
-    extends: ["desktop", "native"],
-  },
-  linux: {
-    extends: ["desktop", "native"],
-  },
-  desktop: {
-    extends: ["native"],
-  },
-  native: {
-    extends: [],
-  },
+  macos: "desktop",
+  windows: "desktop",
+  linux: "desktop",
+  desktop: "native",
+  ios: "mobile",
+  android: "mobile",
+  mobile: "native",
+  native: [],
 };
 
 export const PRESETS: Record<string, PlatformMap> = {

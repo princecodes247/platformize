@@ -46,10 +46,10 @@ describe("@platformize/vite", () => {
     const plugin = platformize({
       targetPlatform: "ios",
       platforms: {
-        ios: { extends: ["mobile", "native"] },
-        android: { extends: ["mobile", "native"] },
-        mobile: { extends: ["native"] },
-        native: { extends: [] },
+        ios: ["mobile", "native"],
+        android: ["mobile", "native"],
+        mobile: "native",
+        native: [],
       },
     });
     const resolveFn = plugin.resolveId as Function;
@@ -63,7 +63,6 @@ describe("@platformize/vite", () => {
       },
     };
 
-    // Should fallback to .mobile.tsx when .ios.tsx is not found
     const resolved = await resolveFn.call(mockContext, "./Button.tsx", "/project/src/App.tsx", {});
     expect(resolved).toEqual({ id: "/project/src/Button.mobile.tsx" });
   });
@@ -71,7 +70,6 @@ describe("@platformize/vite", () => {
   it("auto-detects platform from VITE_PLATFORM environment variable", async () => {
     process.env.VITE_PLATFORM = "linux";
     
-    // We do not pass platform in options
     const plugin = platformize({ preset: "tauri" });
     const resolveFn = plugin.resolveId as Function;
 
@@ -84,7 +82,6 @@ describe("@platformize/vite", () => {
       },
     };
 
-    // If VITE_PLATFORM=linux was picked up, it should resolve Button.linux.tsx
     const resolved = await resolveFn.call(mockContext, "./Button.tsx", "/project/src/App.tsx", {});
     expect(resolved).toEqual({ id: "/project/src/Button.linux.tsx" });
 

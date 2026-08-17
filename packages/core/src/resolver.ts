@@ -1,5 +1,34 @@
-import { ResolvedPlatformConfig, Rule } from "./types.js";
+import { ResolvedPlatformConfig } from "./types.js";
 import { resolvePlatformChain } from "./graph.js";
+
+/**
+ * Helper to compute suffixes for a platform chain given normalized platform nodes.
+ */
+export function computeSuffixesForChain(
+  chain: string[],
+  platforms: Record<string, any>
+): string[] {
+  const suffixes: string[] = [];
+  for (const platformName of chain) {
+    const node = platforms[platformName];
+    if (node && node.suffixes && (Array.isArray(node.suffixes) ? node.suffixes.length > 0 : true)) {
+      const customSuffixes = Array.isArray(node.suffixes) ? node.suffixes : [node.suffixes];
+      for (const s of customSuffixes) {
+        const formatted = s.startsWith(".") ? s : `.${s}`;
+        if (!suffixes.includes(formatted)) {
+          suffixes.push(formatted);
+        }
+      }
+    } else {
+      const defaultSuffix = `.${platformName}`;
+      if (!suffixes.includes(defaultSuffix)) {
+        suffixes.push(defaultSuffix);
+      }
+    }
+  }
+  suffixes.push("");
+  return suffixes;
+}
 
 /**
  * Evaluates custom resolution rules against the source and importer.
@@ -36,10 +65,10 @@ export function evaluateRules(
     // Rule matches, compute new suffixes
     if (rule.getChain) {
       const customChain = rule.getChain(source, importer, config.platform);
-      return [...customChain.map((p) => `.${p}`), ""];
+      return computeSuffixesForChain(customChain, config.platforms);
     } else if (rule.platform) {
       const customChain = resolvePlatformChain(rule.platform, config.platforms, []);
-      return [...customChain.map((p) => `.${p}`), ""];
+      return computeSuffixesForChain(customChain, config.platforms);
     }
   }
 
@@ -53,6 +82,15 @@ export function getAllKnownPlatforms(config: ResolvedPlatformConfig): Set<string
   const platforms = new Set<string>(Object.keys(config.platforms));
   for (const item of config.chain) {
     platforms.add(item);
+  }
+  for (const node of Object.values(config.platforms)) {
+    if (node.suffixes) {
+      const suffixes = Array.isArray(node.suffixes) ? node.suffixes : [node.suffixes];
+      for (const s of suffixes) {
+        const clean = s.startsWith(".") ? s.slice(1) : s;
+        if (clean) platforms.add(clean);
+      }
+    }
   }
   return platforms;
 }
